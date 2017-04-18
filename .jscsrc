@@ -1,0 +1,71 @@
+{
+  "excludeFiles": [
+    "node_modules/**",
+    "src/public/Cesium/**",
+    "src/vendor/**"
+  ],
+  "requireCurlyBraces": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "try",
+    "catch"
+  ],
+  "requireOperatorBeforeLineBreak": true,
+  "requireCamelCaseOrUpperCaseIdentifiers": true,
+  "maximumLineLength": {
+    "value": 120,
+    "allowComments": true,
+    "allowRegex": true
+  },
+  "validateIndentation": 2,
+  "validateQuoteMarks": "\"",
+  "disallowMultipleLineStrings": true,
+  "disallowMixedSpacesAndTabs": true,
+  "disallowTrailingWhitespace": true,
+  "disallowSpaceAfterPrefixUnaryOperators": true,
+  "disallowMultipleVarDecl": true,
+  "requireSpaceAfterKeywords": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "switch",
+    "return",
+    "try",
+    "catch"
+  ],
+  "requireSpaceBeforeBinaryOperators": [
+    "!=", "!==", "%", "%=", "&", "&&", "&=",
+    "*", "*=", "+", "+=", "-", "-=", "/",
+    "/=", "<", "<<", "<<=", "<=", "=",
+    "==", "===", ">", ">=", ">>", ">>=",
+    ">>>", ">>>=", "^", "^=", "|", "|=", "||"
+  ],
+  "requireSpaceAfterBinaryOperators": true,
+  "requireSpacesInConditionalExpression": true,
+  "requireSpaceBeforeBlockStatements": true,
+  "requireLineFeedAtFileEnd": false,
+  "disallowSpacesInsideObjectBrackets": false,
+  "disallowSpacesInsideArrayBrackets": false,
+  "disallowSpacesInsideParentheses": true,
+  "jsDoc": {
+    "checkAnnotations": true,
+    "checkParamNames": true,
+    "requireParamTypes": true,
+    "checkReturnTypes": true,
+    "checkTypes": true
+  },
+  "disallowMultipleLineBreaks": true,
+  "disallowCommaBeforeLineBreak": false,
+  "disallowDanglingUnderscores": true,
+  "disallowEmptyBlocks": true,
+  "disallowTrailingComma": true,
+  "requireCommaBeforeLineBreak": true,
+  "requireDotNotation": null,
+  "requireMultipleVarDecl": false,
+  "requireParenthesesAroundIIFE": true
+}

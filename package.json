@@ -1,0 +1,43 @@
+{
+  "name": "hoogle-vscode",
+  "displayName": "hoogle-vscode",
+  "description": "Haskell Hoogle search in Visual Studio Code",
+  "version": "0.0.1",
+  "publisher": "jcanero",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.hoogle"
+  ],
+  "main": "./extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.hoogle",
+        "title": "Hoogle Search"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "eslint": "^3.6.0",
+    "jscs": "^3.0.7",
+    "mocha": "^2.3.3",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  },
+  "dependencies": {
+    "openurl": "^1.1.1",
+    "q": "^1.5.0",
+    "request": "^2.81.0"
+  }
+}
