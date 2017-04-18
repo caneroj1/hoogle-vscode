@@ -7,6 +7,10 @@
   "engines": {
     "vscode": "^1.11.0"
   },
+  "repository": {
+    "url": "https://github.com/caneroj1/hoogle-vscode.git"
+  },
+  "readme": "README.md",
   "categories": [
     "Other"
   ],
