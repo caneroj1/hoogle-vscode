@@ -35,8 +35,9 @@ function displayHoogleResults(hoogleResults) {
 
   vscode.window.showQuickPick(quickPickList)
     .then((item) => {
-      console.info("Selected", item);
-      openurl.open(item.itemLocation);
+      if (item) {
+        openurl.open(item.itemLocation);
+      }
     });
 }
 
@@ -46,11 +47,7 @@ function getTextFromInput() {
     prompt: "Enter Hoogle search query",
     placeHolder: "a -> b"
   }).then((text) => {
-    if (!text || text.trim() === "") {
-      deferred.reject("");
-    } else {
-      deferred.resolve(text);
-    }
+    deferred.resolve(text);
   });
   return deferred.promise;
 }

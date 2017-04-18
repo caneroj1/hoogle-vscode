@@ -8,8 +8,7 @@ var q = require("Q");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
-  let config = new hoogle.HoogleRequestConfig();
-  let manager = new hoogle.HoogleRequestManager(config, utils.displayHoogleResults);
+  let manager = new hoogle.HoogleRequestManager();
 
   var disposable = vscode.commands.registerCommand("extension.hoogle", function () {
     var deferred = q.defer();
@@ -25,12 +24,12 @@ function activate(context) {
 
     promise
       .then((text) => {
-        manager.search(text);
+        let config = new hoogle.HoogleRequestConfig(text, utils.displayHoogleResults);
+        manager.search(config);
       });
   });
 
   context.subscriptions.push(disposable);
-  context.subscriptions.push(config);
   context.subscriptions.push(manager);
 }
 exports.activate = activate;

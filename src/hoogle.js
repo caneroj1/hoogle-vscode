@@ -2,8 +2,12 @@ var vscode = require("vscode");
 var request = require("request");
 var qs = require("querystring");
 
-function HoogleRequestConfig() {
-  this.maximumResults = 5;
+function HoogleRequestConfig(query, resultsCallback) {
+  var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");
+  this.maxResults = extSettings.get("maxResults");
+  this.resultsCallback = resultsCallback;
+  this.verbose = extSettings.get("verbose");
+  this.query = query;
 }
 
 function HoogleResultItem(location = "", self = "", docs = "") {
@@ -43,63 +47,74 @@ function HoogleResults(json = {}) {
   }
 }
 
-function HoogleRequestManager(config = new HoogleRequestConfig(), resultsCallback) {
+function HoogleRequestManager() {
   let mgr = this;
   mgr.url = "http://www.haskell.org/hoogle/";
-  mgr.config = config;
-  mgr.resultsCallback = resultsCallback;
 
-  mgr.isValidQuery = function (query) {
-    return query && query !== "";
+  mgr.isValidQuery = function (hoogleConfig) {
+    return hoogleConfig.query && hoogleConfig.query !== "";
   }
 
-  mgr.formatQuery = function (query) {
-    if (query) {
-      query = query.trim();
+  mgr.formatQuery = function (hoogleConfig) {
+    if (hoogleConfig.query) {
+      hoogleConfig.query = hoogleConfig.query.trim();
     }
   }
 
-  mgr.getOptions = function (query) {
+  mgr.getOptions = function (hoogleConfig) {
     return {
       mode: "json",
-      count: mgr.config.maximumResults,
-      hoogle: query
+      count: hoogleConfig.maxResults,
+      hoogle: hoogleConfig.query
     };
   }
 
-  mgr.handleResponse = function (err, response, body) {
-    if (err) {
-      console.error("Hoogle Error", err);
-      vscode.window.showErrorMessage("Something went wrong searching Hoogle!");
-      vscode.window.showQuickPick()
-      return null;
-    } else {
-      console.info("Unparsed", body);
+  mgr.handleResponse = function (hoogleConfig) {
+    return function (err, response, body) {
+      if (err) {
+        console.error("Hoogle Error", err);
+        vscode.window.showErrorMessage("Something went wrong searching Hoogle!");
+        return null;
+      } else {
+        if (hoogleConfig.verbose) {
+          console.info("Unparsed", body);
+        }
 
-      var json = JSON.parse(body);
-      console.info("Parsed", json);
+        var json = JSON.parse(body);
 
-      var results = new HoogleResults(json);
+        if (hoogleConfig.verbose) {
+          console.info("Parsed", json);
+        }
 
-      console.info("Results", results);
-      mgr.resultsCallback(results);
+        var results = new HoogleResults(json);
+
+        if (hoogleConfig.verbose) {
+          console.info("Results", results);
+        }
+        hoogleConfig.resultsCallback(results);
+      }
     }
   }
 
-  mgr.search = function (query) {
-    mgr.formatQuery(query);
-    if (!mgr.isValidQuery(query)) {
+  mgr.search = function (hoogleConfig) {
+    mgr.formatQuery(hoogleConfig);
+    if (!mgr.isValidQuery(hoogleConfig)) {
       return;
     }
 
-    var opts = mgr.getOptions(query);
+    var opts = mgr.getOptions(hoogleConfig);
     var params = qs.stringify(opts);
-    console.info("Hoogle Params", params);
+
+    if (hoogleConfig.verbose) {
+      console.info("Hoogle Params", params);
+    }
 
     var requestURL = `${mgr.url}?${params}`;
 
-    console.info("Hoogle Request", requestURL);
-    request.get(requestURL, null, mgr.handleResponse);
+    if (hoogleConfig.verbose) {
+      console.info("Hoogle Request", requestURL);
+    }
+    request.get(requestURL, null, mgr.handleResponse(hoogleConfig));
   }
 }
 
