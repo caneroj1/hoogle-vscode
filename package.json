@@ -15,12 +15,10 @@
   ],
   "main": "./extension",
   "contributes": {
-    "commands": [
-      {
-        "command": "extension.hoogle",
-        "title": "Hoogle Search"
-      }
-    ]
+    "commands": [{
+      "command": "extension.hoogle",
+      "title": "Hoogle Search"
+    }]
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
@@ -29,7 +27,6 @@
   "devDependencies": {
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
-    "eslint": "^3.6.0",
     "jscs": "^3.0.7",
     "mocha": "^2.3.3",
     "typescript": "^2.0.3",
