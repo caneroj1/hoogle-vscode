@@ -1,7 +1,8 @@
 # Change Log
-All notable changes to the "hoogle-vscode" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.2]
+- Fix [#1](https://github.com/caneroj1/hoogle-vscode/issues/1)
+- Add keybindings to search command
 
-## [Unreleased]
+## [0.0.1]
 - Initial release

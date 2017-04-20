@@ -3,7 +3,7 @@
 var vscode = require("vscode");
 var hoogle = require("./src/hoogle");
 var utils = require("./src/utils");
-var q = require("Q");
+var q = require("q");
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

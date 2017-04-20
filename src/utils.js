@@ -1,6 +1,6 @@
 var vscode = require("vscode");
 var openurl = require("openurl");
-var q = require("Q");
+var q = require("q");
 
 function getCurrentlySelectedText() {
   var activeTextEditor = vscode.window.activeTextEditor;
