@@ -44,6 +44,7 @@ suite("hoogle-vscode tests", function () {
     var item2 = parsedResults.results[1];
     assert.equal("Control-Monad", item2.getModuleName());
     assert.equal("join :: Monad m => m (m a) -> m a", item2.getQueryResult());
+    console.log("here");
   });
 
   test("Parsing response: V5", function () {

@@ -16,3 +16,5 @@ install:
 
 script:
   - npm test --silent
+
+language: node_js
