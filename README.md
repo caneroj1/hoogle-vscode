@@ -1,5 +1,7 @@
 # hoogle-vscode
 
+[![Build status](https://ci.appveyor.com/api/projects/status/0m2jfw2lfl3kb200?svg=true)](https://ci.appveyor.com/project/caneroj1/hoogle-vscode)
+
 Extension for Visual Studio Code to search Hoogle, the Haskell search engine.
 
 Available for download in the [marketplace](https://marketplace.visualstudio.com/items?itemName=jcanero.hoogle-vscode).
