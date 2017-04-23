@@ -137,7 +137,7 @@ function HoogleResultItemV5(url, mod, package, item, doc, type) {
   }
 }
 
-function HoogleResults(json = {}) {
+function HoogleResults(json = {}, count = 5) {
   this.results = []
 
   //  try and see if the response has a version.
@@ -176,6 +176,8 @@ function HoogleResults(json = {}) {
       vscode.window.showErrorMessage("Unknown response format from Hoogle!");
     }
   }
+
+  this.results = _.take(this.results, count);
 }
 
 function HoogleRequestManager() {
@@ -216,7 +218,7 @@ function HoogleRequestManager() {
           console.info("Parsed", json);
         }
 
-        var results = new HoogleResults(json);
+        var results = new HoogleResults(json, hoogleConfig.maxResults);
 
         if (hoogleConfig.verbose) {
           console.info("Results", results);
