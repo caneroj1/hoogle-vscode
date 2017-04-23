@@ -1,6 +1,12 @@
 var vscode = require("vscode");
 var openurl = require("openurl");
 var q = require("q");
+var _ = require("underscore");
+
+function removeHTMLandEntities(text) {
+  var htmlTagRegex = /<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi;
+  return _.unescape(text.replace(htmlTagRegex, ""))
+}
 
 function getCurrentlySelectedText() {
   var activeTextEditor = vscode.window.activeTextEditor;
@@ -14,8 +20,8 @@ function getCurrentlySelectedText() {
 }
 
 function getQuickPickItem(hoogleResultItem) {
-  var packageName = hoogleResultItem.getPackageName();
-  var functionAndTypeSig = hoogleResultItem.self;
+  var packageName = hoogleResultItem.getModuleName();
+  var functionAndTypeSig = hoogleResultItem.getQueryResult();
 
   return {
     label: packageName,
@@ -25,8 +31,6 @@ function getQuickPickItem(hoogleResultItem) {
 }
 
 function displayHoogleResults(hoogleResults) {
-  console.log(hoogleResults);
-
   var quickPickList = [];
   var results = hoogleResults.results;
   for (var i = 0; i < results.length; i++) {
@@ -56,3 +60,4 @@ exports.displayHoogleResults = displayHoogleResults;
 exports.getQuickPickItem = getQuickPickItem;
 exports.getCurrentlySelectedText = getCurrentlySelectedText;
 exports.getTextFromInput = getTextFromInput;
+exports.removeHTMLandEntities = removeHTMLandEntities;

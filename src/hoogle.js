@@ -1,21 +1,25 @@
 var vscode = require("vscode");
 var request = require("request");
 var qs = require("querystring");
+var utils = require("./utils");
 
 function HoogleRequestConfig(query, resultsCallback) {
   var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");
+
   this.maxResults = extSettings.get("maxResults");
-  this.resultsCallback = resultsCallback;
+  this.url = extSettings.get("url");
   this.verbose = extSettings.get("verbose");
+
+  this.resultsCallback = resultsCallback;
   this.query = query;
 }
 
-function HoogleResultItem(location = "", self = "", docs = "") {
+function HoogleResultItemV4(location = "", result = "", docs = "") {
   this.location = location;
-  this.self = self;
+  this.result = result;
   this.docs = docs;
 
-  this.getPackageName = function () {
+  this.getModuleName = function () {
     var splitComponents = this.location.split("/");
 
     if (splitComponents.length < 1) {
@@ -34,22 +38,74 @@ function HoogleResultItem(location = "", self = "", docs = "") {
     var packageName = packageWithHTML.replace(".html", "");
     return packageName;
   }
+
+  this.getQueryResult = function () {
+    return this.result;
+  }
+}
+
+function HoogleResultItemV5(url, moduleName, item, docs) {
+  this.location = url;
+  this.module = moduleName;
+  this.result = utils.removeHTMLandEntities(item);
+  this.docs = docs;
+
+  this.getModuleName = function () {
+    return this.module;
+  }
+
+  this.getQueryResult = function () {
+    return this.result;
+  }
 }
 
 function HoogleResults(json = {}) {
-  var tmpResults = json.results || [];
   this.results = []
-  this.version = json.version || "N/A";
 
-  for (var i = 0; i < tmpResults.length; i++) {
-    var item = tmpResults[i];
-    this.results.push(new HoogleResultItem(item.location, item.self, item.docs));
+  //  try and see if the response has a version.
+  //  if it does, and it's V4, then parse the results
+  //  using the V4 type.
+  if (json.version) {
+    var versionNumbers = json.version.split(".");
+    var major = versionNumbers[0];
+
+    if (major === "4" && json.results) {
+      for (var i = 0; i < json.results.length; i++) {
+        var item = json.results[i];
+        this.results.push(new HoogleResultItemV4(item.location, item.self, item.docs));
+      }
+    } else {
+      vscode.window.showErrorMessage("Unknown response format from Hoogle!");
+    }
+  }
+  //  otherwise, try and parse the result using
+  //  the version 5 format.
+  else {
+    if (Array.isArray(json)) {
+      json.forEach(function (resultItem) {
+        var url = resultItem.url;
+        var docs = resultItem.docs;
+        var result = resultItem.item;
+
+        var moduleName = null;
+        if (resultItem.module) {
+          var moduleName = resultItem.module.name;
+        }
+
+        if (!url || !result || !moduleName) {
+          vscode.window.showErrorMessage("Unknown response format from Hoogle!");
+        } else {
+          this.results.push(new HoogleResultItemV5(url, moduleName, result, docs));
+        }
+      }, this);
+    } else {
+      vscode.window.showErrorMessage("Unknown response format from Hoogle!");
+    }
   }
 }
 
 function HoogleRequestManager() {
   let mgr = this;
-  mgr.url = "http://www.haskell.org/hoogle/";
 
   mgr.isValidQuery = function (hoogleConfig) {
     return hoogleConfig.query && hoogleConfig.query !== "";
@@ -109,7 +165,7 @@ function HoogleRequestManager() {
       console.info("Hoogle Params", params);
     }
 
-    var requestURL = `${mgr.url}?${params}`;
+    var requestURL = `${hoogleConfig.url}?${params}`;
 
     if (hoogleConfig.verbose) {
       console.info("Hoogle Request", requestURL);
@@ -120,3 +176,4 @@ function HoogleRequestManager() {
 
 exports.HoogleRequestConfig = HoogleRequestConfig;
 exports.HoogleRequestManager = HoogleRequestManager;
+exports.HoogleResults = HoogleResults;
