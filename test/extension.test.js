@@ -22,12 +22,22 @@ suite("hoogle-vscode tests", function () {
       "results": [{
           "location": "http://hackage.haskell.org/packages/archive/base/latest/doc/html/Prelude.html#v:putStr",
           "self": "putStr :: String -> IO ()",
-          "docs": "Write a string to the standard output device (same as hPutStr stdout). "
+          "docs": "..."
         },
         {
           "location": "http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Monad.html#v:join",
           "self": "join :: Monad m => m (m a) -> m a",
-          "docs": "The join function is the conventional monad join operator...."
+          "docs": "..."
+        },
+        {
+          "location": "http://hackage.haskell.org/package/join",
+          "self": "package join",
+          "docs": "..."
+        },
+        {
+          "location": "http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Monad.html",
+          "self": "module Control.Monad",
+          "docs": "..."
         }
       ],
       "version": "4.2.26"
@@ -35,15 +45,28 @@ suite("hoogle-vscode tests", function () {
 
     var parsedResults = new hoogle.HoogleResults(responseV4);
 
-    assert.equal(2, parsedResults.results.length);
+    assert.equal(4, parsedResults.results.length);
 
     var item1 = parsedResults.results[0];
     assert.equal("Prelude", item1.getModuleName());
     assert.equal("putStr :: String -> IO ()", item1.getQueryResult());
+    assert.equal(false, item1.isModule());
 
     var item2 = parsedResults.results[1];
     assert.equal("Control-Monad", item2.getModuleName());
     assert.equal("join :: Monad m => m (m a) -> m a", item2.getQueryResult());
+    assert.equal(false, item1.isModule());
+
+    var item3 = parsedResults.results[2];
+    assert.equal("package join", item3.getQueryResult());
+    assert.equal(false, item3.isModule());
+    assert.equal(true, item3.isPackage());
+
+    var item4 = parsedResults.results[3];
+    assert.equal("module Control.Monad", item4.getQueryResult());
+    assert.equal("package base", item4.getPackageName());
+    assert.equal(true, item4.isModule());
+    assert.equal(false, item4.isPackage());
   });
 
   test("Parsing response: V5", function () {
@@ -89,11 +112,30 @@ suite("hoogle-vscode tests", function () {
         "type": "",
         "docs": "..."
       },
+      {
+        "url": "https://hackage.haskell.org/package/base/docs/Control-Monad.html",
+        "module": {},
+        "package": {
+          "url": "https://hackage.haskell.org/package/base",
+          "name": "base"
+        },
+        "item": "<b>module</b> Control.<span class=name><0>Monad</0></span>",
+        "type": "module",
+        "docs": "..."
+      },
+      {
+        "url": "https://hackage.haskell.org/package/base",
+        "module": {},
+        "package": {},
+        "item": "<b>package</b> <span class=name><0>base</0></span>",
+        "type": "package",
+        "docs": "..."
+      }
     ];
 
     var parsedResults = new hoogle.HoogleResults(responseV5);
 
-    assert.equal(3, parsedResults.results.length);
+    assert.equal(5, parsedResults.results.length);
 
     var item1 = parsedResults.results[0];
     assert.equal("Prelude", item1.getModuleName());
@@ -106,5 +148,16 @@ suite("hoogle-vscode tests", function () {
     var item3 = parsedResults.results[2];
     assert.equal("Prelude", item3.getModuleName());
     assert.equal("($) :: (a -> b) -> a -> b", item3.getQueryResult());
+
+    var item4 = parsedResults.results[3];
+    assert.equal("module Control.Monad", item4.getQueryResult());
+    assert.equal("package base", item4.getPackageName());
+    assert.equal(true, item4.isModule());
+    assert.equal(false, item4.isPackage());
+
+    var item5 = parsedResults.results[4];
+    assert.equal("package base", item5.getQueryResult());
+    assert.equal(false, item5.isModule());
+    assert.equal(true, item5.isPackage());
   });
 });

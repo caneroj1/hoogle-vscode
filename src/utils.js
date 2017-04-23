@@ -20,13 +20,35 @@ function getCurrentlySelectedText() {
 }
 
 function getQuickPickItem(hoogleResultItem) {
-  var packageName = hoogleResultItem.getModuleName();
-  var functionAndTypeSig = hoogleResultItem.getQueryResult();
+  var label = "";
+  var description = "";
+  var location = hoogleResultItem.location;
+
+  //  if we're displaying a package,
+  //  we want to display the package name as the
+  //  label, and nothing in the description.
+  if (hoogleResultItem.isPackage()) {
+    label = hoogleResultItem.getQueryResult();
+
+    //  if we're displaying a module,
+    //  we want to display the module name as the
+    //  label, and the package name as the description.
+  } else if (hoogleResultItem.isModule()) {
+    label = hoogleResultItem.getQueryResult();
+    description = hoogleResultItem.getPackageName();
+
+    //  otherwise, we're displaying a "real" query result,
+    //  so we want to have the label be the module name,
+    //  and the description the result
+  } else {
+    label = hoogleResultItem.getModuleName();
+    description = hoogleResultItem.getQueryResult();
+  }
 
   return {
-    label: packageName,
-    description: functionAndTypeSig,
-    itemLocation: hoogleResultItem.location
+    label: label,
+    description: description,
+    itemLocation: location
   };
 }
 

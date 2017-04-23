@@ -2,6 +2,7 @@ var vscode = require("vscode");
 var request = require("request");
 var qs = require("querystring");
 var utils = require("./utils");
+var _ = require("underscore");
 
 function HoogleRequestConfig(query, resultsCallback) {
   var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");
@@ -18,12 +19,67 @@ function HoogleResultItemV4(location = "", result = "", docs = "") {
   this.location = location;
   this.result = result;
   this.docs = docs;
+  this.isModuleType = false;
+  this.isPackageType = false;
+
+  //  v4 results don't have "type" identifiers in the response, so we'll have to parse
+  //  some information out manually.
+
+  //  check if it's a module result
+  if (this.result.includes("module ")) {
+    this.isModuleType = true;
+  } else if (this.result.includes("package ")) {
+    this.isPackageType = true;
+  }
+
+  this.isModule = function () {
+    return this.isModuleType;
+  }
+
+  this.isPackage = function () {
+    return this.isPackageType;
+  }
+
+  this.getPackageName = function () {
+    if (this.isPackageType) {
+      return this.result;
+    }
+
+    var splitComponents = this.location.split("/");
+
+    //  get the package name from the URL. :(
+    var index = _.findIndex(splitComponents, function (item) {
+      return item === "archive";
+    });
+
+    //  there is no "archive" component in the URL,
+    //  so check if there is a "package" component
+    if (index === -1) {
+      index = _.findIndex(splitComponents, function (item) {
+        return item === "package";
+      });
+    }
+
+    if (index === -1) {
+      return "Unknown Package";
+    } else {
+      if (splitComponents[index + 1]) {
+        return "package " + splitComponents[index + 1]
+      }
+
+      return "Unknown Package";
+    }
+  }
 
   this.getModuleName = function () {
+    if (this.isModuleType) {
+      return this.result.replace("module ", "");
+    }
+
     var splitComponents = this.location.split("/");
 
     if (splitComponents.length < 1) {
-      return "Unknown Package";
+      return "Unknown Module";
     }
 
     var last = splitComponents[splitComponents.length - 1];
@@ -31,7 +87,7 @@ function HoogleResultItemV4(location = "", result = "", docs = "") {
     var splitOnOctothorpe = last.split("#");
 
     if (splitOnOctothorpe.length === 0) {
-      return "Unknown Package"
+      return "Unknown Module"
     }
 
     var packageWithHTML = splitOnOctothorpe[0];
@@ -44,14 +100,36 @@ function HoogleResultItemV4(location = "", result = "", docs = "") {
   }
 }
 
-function HoogleResultItemV5(url, moduleName, item, docs) {
+function HoogleResultItemV5(url, mod, package, item, doc, type) {
   this.location = url;
-  this.module = moduleName;
+  this.module = mod;
+  this.package = package;
   this.result = utils.removeHTMLandEntities(item);
-  this.docs = docs;
+  this.docs = doc;
+  this.type = type;
+
+  this.isModule = function () {
+    return this.type === "module";
+  }
+
+  this.isPackage = function () {
+    return this.type === "package";
+  }
 
   this.getModuleName = function () {
-    return this.module;
+    if (this.module && this.module.name) {
+      return this.module.name;
+    }
+
+    return "Unknown Module";
+  }
+
+  this.getPackageName = function () {
+    if (this.package && this.package.name) {
+      return "package " + this.package.name;
+    }
+
+    return "Unknown Package";
   }
 
   this.getQueryResult = function () {
@@ -86,16 +164,12 @@ function HoogleResults(json = {}) {
         var url = resultItem.url;
         var docs = resultItem.docs;
         var result = resultItem.item;
+        var type = resultItem.type;
 
-        var moduleName = null;
-        if (resultItem.module) {
-          var moduleName = resultItem.module.name;
-        }
-
-        if (!url || !result || !moduleName) {
+        if (!url || !result) {
           vscode.window.showErrorMessage("Unknown response format from Hoogle!");
         } else {
-          this.results.push(new HoogleResultItemV5(url, moduleName, result, docs));
+          this.results.push(new HoogleResultItemV5(url, resultItem.module, resultItem.package, result, docs, type));
         }
       }, this);
     } else {
