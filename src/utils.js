@@ -3,6 +3,31 @@ var openurl = require("openurl");
 var q = require("q");
 var _ = require("underscore");
 
+function isUpperCase(str) {
+  return str == str.toUpperCase() && str != str.toLowerCase();
+}
+
+function isModuleLike(string) {
+  return _.includes(string, ".") || isUpperCase(_.first(string))
+}
+
+function exists(o) {
+  return !_.isUndefined(o) && !_.isNull(o);
+}
+
+function keepValidPackages(packageNames) {
+  return _.chain(packageNames)
+    .filter(exists)
+    .filter(_.isString)
+    .reject(_.isEmpty)
+    .reject(isModuleLike)
+    .value();
+}
+
+function toPackageString(packageNames) {
+  return _.map(packageNames, (package) => `+${package}`).join(" ");
+}
+
 function removeHTMLandEntities(text) {
   var htmlTagRegex = /<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi;
   return _.unescape(text.replace(htmlTagRegex, ""))
@@ -83,3 +108,8 @@ exports.getQuickPickItem = getQuickPickItem;
 exports.getCurrentlySelectedText = getCurrentlySelectedText;
 exports.getTextFromInput = getTextFromInput;
 exports.removeHTMLandEntities = removeHTMLandEntities;
+exports.isModuleLike = isModuleLike;
+exports.isUpperCase = isUpperCase;
+exports.keepValidPackages = keepValidPackages;
+exports.exists = exists;
+exports.toPackageString = toPackageString;

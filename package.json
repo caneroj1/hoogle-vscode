@@ -52,6 +52,16 @@
           "type": "string",
           "default": "http://www.haskell.org/hoogle/",
           "description": "The url of the Hoogle server to query. Can point to a local Hoogle server."
+        },
+        "hoogle-vscode.useCabalDependencies": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable hoogle-vscode to watch a .cabal file in your workspace to get the list of packages your project depends on. This list will be passed to Hoogle to broaden the scope of your search."
+        },
+        "hoogle-vscode.forcePackages": {
+          "type": "array",
+          "default": [],
+          "description": "A list of package names that will be included in all Hoogle queries."
         }
       }
     }

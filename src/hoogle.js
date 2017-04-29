@@ -3,6 +3,7 @@ var request = require("request");
 var qs = require("querystring");
 var utils = require("./utils");
 var _ = require("underscore");
+var cabal = require("./cabalParser");
 
 function HoogleRequestConfig(query, resultsCallback) {
   var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");
@@ -193,11 +194,13 @@ function HoogleRequestManager() {
     }
   }
 
-  mgr.getOptions = function (hoogleConfig) {
+  mgr.getOptions = function (hoogleConfig, packageDependencies = "") {
+    let query = `${packageDependencies} ${hoogleConfig.query}`
+
     return {
       mode: "json",
       count: hoogleConfig.maxResults,
-      hoogle: hoogleConfig.query
+      hoogle: query
     };
   }
 
@@ -228,13 +231,13 @@ function HoogleRequestManager() {
     }
   }
 
-  mgr.search = function (hoogleConfig) {
+  mgr.search = function (hoogleConfig, deps) {
     mgr.formatQuery(hoogleConfig);
     if (!mgr.isValidQuery(hoogleConfig)) {
       return;
     }
 
-    var opts = mgr.getOptions(hoogleConfig);
+    var opts = mgr.getOptions(hoogleConfig, deps);
     var params = qs.stringify(opts);
 
     if (hoogleConfig.verbose) {

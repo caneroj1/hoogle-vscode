@@ -4,11 +4,13 @@ var vscode = require("vscode");
 var hoogle = require("./src/hoogle");
 var utils = require("./src/utils");
 var q = require("q");
+var cabal = require("./src/cabalParser");
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
   let manager = new hoogle.HoogleRequestManager();
+  let cabalFileWatcher = new cabal.CabalFileWatcher(context);
 
   var disposable = vscode.commands.registerCommand("extension.hoogle", function () {
     var deferred = q.defer();
@@ -25,12 +27,14 @@ function activate(context) {
     promise
       .then((text) => {
         let config = new hoogle.HoogleRequestConfig(text, utils.displayHoogleResults);
-        manager.search(config);
+        let deps = cabalFileWatcher.getDependencies();
+        manager.search(config, deps);
       });
   });
 
   context.subscriptions.push(disposable);
   context.subscriptions.push(manager);
+  context.subscriptions.push(cabalFileWatcher);
 }
 exports.activate = activate;
 
