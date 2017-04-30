@@ -13,9 +13,53 @@ var assert = require("assert");
 var vscode = require("vscode");
 var myExtension = require("../extension");
 var hoogle = require("../src/hoogle");
+var utils = require("../src/utils");
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("hoogle-vscode tests", function () {
+
+  test("Validating lists of package names", function () {
+    //  we lowercase words that appear to be package names
+    let list1 = [
+      "Cabal",
+      "HUnit",
+      "array"
+    ];
+
+    assert.deepEqual(utils.toValidPackages(list1), [
+      "cabal",
+      "hunit",
+      "array"
+    ]);
+
+    //  remove words that appear to be modules
+    let list2 = [
+      "Data.Aeson",
+      "Control.Monad",
+      "base"
+    ];
+
+    assert.deepEqual(utils.toValidPackages(list2), [
+      "base"
+    ]);
+
+    //  remove bad input
+    let list3 = [
+      "",
+      undefined,
+      null,
+      1, [
+        4,
+        5,
+        "7"
+      ],
+      "base"
+    ];
+
+    assert.deepEqual(utils.toValidPackages(list3), [
+      "base"
+    ]);
+  });
 
   test("Parsing response: V4", function () {
     var responseV4 = {
