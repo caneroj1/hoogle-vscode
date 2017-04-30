@@ -128,17 +128,27 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
   }
 
   this.getDependencies = function () {
+    //  minor optimization here:
+    //  -----------------------
+    //  if we aren't using dependencies from a .cabal file,
+    //  and we aren't using and forced dependency packages,
+    //  we don't need to include the default package list
+    //  in the query string.
+    if (_.isEmpty(me.forcedDependencies) && !me.useCabalDependencies && me.includeDefaultPackages) {
+      return "";
+    }
+
     let returnedDependencies = me.forcedDependencies;
 
     if (me.includeDefaultPackages) {
       returnedDependencies = `${returnedDependencies} ${me.defaultPackages}`;
     }
 
-    if (!me.useCabalDependencies) {
-      return returnedDependencies;
+    if (me.useCabalDependencies) {
+      returnedDependencies = `${returnedDependencies} ${me.dependencies}`;
     }
 
-    return `${returnedDependencies} ${me.dependencies}`;
+    return returnedDependencies;
   }
 
   setConfigSettings();
