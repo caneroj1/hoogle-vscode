@@ -2,6 +2,7 @@ var vscode = require("vscode");
 var _ = require("underscore");
 var childProcess = require("child_process");
 var utils = require("./utils");
+var defaultPackages = require("./defaultPackages").default;
 
 exports.CabalFileWatcher = function CabalFileWatcher() {
   let me = this;
@@ -12,6 +13,8 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
   me.onDidDeleteWatcher = null;
   me.onDidCreateWatcher = null;
   me.useCabalDependencies = false;
+  me.includeDefaultPackages = true;
+  me.defaultPackages = utils.toPackageString(utils.toValidPackages(defaultPackages));
   vscode.workspace.onDidChangeConfiguration(setConfigSettings, me);
 
   function dispose() {
@@ -43,7 +46,9 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
     var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");
     me.verbose = extSettings.get("verbose");
 
-    var configDependencies = extSettings.get("forcePackages");
+    me.includeDefaultPackages = extSettings.get("includeDefaultPackages");
+
+    var configDependencies = extSettings.get("additionalPackages");
 
     if (me.verbose) {
       console.log("Packages from config: ", configDependencies);
@@ -52,7 +57,7 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
     if (!utils.exists(configDependencies) || !_.isArray(configDependencies) || configDependencies.length === 0) {
       me.forcedDependencies = "";
     } else {
-      me.forcedDependencies = utils.toPackageString(utils.keepValidPackages(configDependencies));
+      me.forcedDependencies = utils.toPackageString(utils.toValidPackages(configDependencies));
     }
 
     if (me.verbose) {
@@ -79,6 +84,7 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
         console.log("CabalFileWatcher starting file watching");
       }
       startWatching();
+      me.getDependenciesFromStack();
     }
   }
 
@@ -99,7 +105,7 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
       var output = outBuffer.toString();
       var lines = output.split("\n");
       var packageNames = _.map(lines, (line) => line.split(" ")[0]);
-      me.dependencies = utils.toPackageString(utils.keepValidPackages(packageNames));
+      me.dependencies = utils.toPackageString(utils.toValidPackages(packageNames));
     } else {
       me.dependencies = "";
     }
@@ -124,15 +130,15 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
   this.getDependencies = function () {
     let returnedDependencies = me.forcedDependencies;
 
+    if (me.includeDefaultPackages) {
+      returnedDependencies = `${returnedDependencies} ${me.defaultPackages}`;
+    }
+
     if (!me.useCabalDependencies) {
-      return me.forcedDependencies;
+      return returnedDependencies;
     }
 
-    if (!utils.exists(me.dependencies) && me.useCabalDependencies) {
-      me.getDependenciesFromStack();
-    }
-
-    return `${me.forcedDependencies} ${me.dependencies}`;
+    return `${returnedDependencies} ${me.dependencies}`;
   }
 
   setConfigSettings();

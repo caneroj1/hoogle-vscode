@@ -7,20 +7,25 @@ function isUpperCase(str) {
   return str == str.toUpperCase() && str != str.toLowerCase();
 }
 
-function isModuleLike(string) {
-  return _.includes(string, ".") || isUpperCase(_.first(string))
+function isModule(string) {
+  return _.includes(string, ".");
 }
 
 function exists(o) {
   return !_.isUndefined(o) && !_.isNull(o);
 }
 
-function keepValidPackages(packageNames) {
+function toPackageName(package) {
+  return package.toLowerCase();
+}
+
+function toValidPackages(packageNames) {
   return _.chain(packageNames)
     .filter(exists)
     .filter(_.isString)
     .reject(_.isEmpty)
-    .reject(isModuleLike)
+    .reject(isModule)
+    .map(toPackageName)
     .value();
 }
 
@@ -108,8 +113,8 @@ exports.getQuickPickItem = getQuickPickItem;
 exports.getCurrentlySelectedText = getCurrentlySelectedText;
 exports.getTextFromInput = getTextFromInput;
 exports.removeHTMLandEntities = removeHTMLandEntities;
-exports.isModuleLike = isModuleLike;
+exports.isModule = isModule;
 exports.isUpperCase = isUpperCase;
-exports.keepValidPackages = keepValidPackages;
+exports.toValidPackages = toValidPackages;
 exports.exists = exists;
 exports.toPackageString = toPackageString;

@@ -56,12 +56,17 @@
         "hoogle-vscode.useCabalDependencies": {
           "type": "boolean",
           "default": false,
-          "description": "Enable hoogle-vscode to watch a .cabal file in your workspace to get the list of packages your project depends on. This list will be passed to Hoogle to broaden the scope of your search."
+          "description": "Enable hoogle-vscode to watch a .cabal file in your workspace to get the list of packages your project depends on. This list will be passed to Hoogle to filter the scope of your search to those packages."
         },
-        "hoogle-vscode.forcePackages": {
+        "hoogle-vscode.additionalPackages": {
           "type": "array",
           "default": [],
           "description": "A list of package names that will be included in all Hoogle queries."
+        },
+        "hoogle-vscode.includeDefaultPackages": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, the following packages will be included in all Hoogle queries: array, arrows, base, bytestring, Cabal, cgi, containers, directory, filepath, haskell-src, HUnit, mtl, old-locale, old-time, packedstring, parallel, parsec, pretty, process, QuickCheck, random, stm, template-haskell, time, xhtml."
         }
       }
     }
