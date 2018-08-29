@@ -148,7 +148,7 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
       returnedDependencies = `${returnedDependencies} ${me.dependencies}`;
     }
 
-    return returnedDependencies;
+    return _.chain(returnedDependencies.split(" ")).unique().join(" ").value();
   }
 
   setConfigSettings();
