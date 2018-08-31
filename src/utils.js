@@ -45,6 +45,10 @@ function getCurrentlySelectedText() {
   }
 
   var selection = activeTextEditor.selection;
+  if (selection.start === selection.end) {
+    return;
+  }
+
   var text = activeTextEditor.document.getText(selection);
   return text.trim();
 }

@@ -2,7 +2,7 @@
   "name": "hoogle-vscode",
   "displayName": "hoogle-vscode",
   "description": "Haskell Hoogle search in Visual Studio Code",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "jcanero",
   "engines": {
     "vscode": "^1.11.0"
@@ -23,17 +23,21 @@
   ],
   "main": "./extension",
   "contributes": {
-    "commands": [{
-      "command": "extension.hoogle",
-      "title": "Hoogle Search"
-    }],
-    "keybindings": [{
-      "command": "extension.hoogle",
-      "key": "shift+alt+h",
-      "mac": "shift+alt+h",
-      "win": "shift+alt+h",
-      "linux": "shift+alt+h"
-    }],
+    "commands": [
+      {
+        "command": "extension.hoogle",
+        "title": "Hoogle Search"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.hoogle",
+        "key": "shift+alt+h",
+        "mac": "shift+alt+h",
+        "win": "shift+alt+h",
+        "linux": "shift+alt+h"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "hoogle-vscode configuration settings",

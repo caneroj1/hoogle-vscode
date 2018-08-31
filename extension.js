@@ -10,7 +10,7 @@ var cabal = require("./src/cabalParser");
 // your extension is activated the very first time the command is executed
 function activate(context) {
   let manager = new hoogle.HoogleRequestManager();
-  let cabalFileWatcher = new cabal.CabalFileWatcher(context);
+  let cabalFileWatcher = new cabal.CabalFileWatcher();
 
   var disposable = vscode.commands.registerCommand("extension.hoogle", function () {
     var deferred = q.defer();
@@ -38,5 +38,5 @@ function activate(context) {
 }
 exports.activate = activate;
 
-function deactivate() {}
+function deactivate() { }
 exports.deactivate = deactivate;

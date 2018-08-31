@@ -3,7 +3,6 @@ var request = require("request");
 var qs = require("querystring");
 var utils = require("./utils");
 var _ = require("underscore");
-var cabal = require("./cabalParser");
 
 function HoogleRequestConfig(query, resultsCallback) {
   var extSettings = vscode.workspace.getConfiguration("hoogle-vscode");

@@ -14,7 +14,7 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
   me.onDidCreateWatcher = null;
   me.useCabalDependencies = false;
   me.includeDefaultPackages = true;
-  me.defaultPackages = utils.toPackageString(utils.toValidPackages(defaultPackages));
+  me.defaultPackages = utils.toPackageString(defaultPackages);
   vscode.workspace.onDidChangeConfiguration(setConfigSettings, me);
 
   function dispose() {
@@ -89,26 +89,24 @@ exports.CabalFileWatcher = function CabalFileWatcher() {
   }
 
   this.getDependenciesFromStack = function () {
-    var outBuffer = null;
-    try {
-      outBuffer = childProcess.execSync("stack list-dependencies", {
-        input: "",
-        cwd: vscode.workspace.rootPath || "."
-      });
-    } catch (err) {
-      if (me.verbose) {
+    childProcess.exec("stack list-dependencies", {
+      input: "",
+      cwd: vscode.workspace.rootPath || "."
+    }, (err, stdout) => {
+      if (err && me.verbose) {
         console.error(err);
       }
-    }
 
-    if (outBuffer) {
-      var output = outBuffer.toString();
-      var lines = output.split("\n");
-      var packageNames = _.map(lines, (line) => line.split(" ")[0]);
-      me.dependencies = utils.toPackageString(utils.toValidPackages(packageNames));
-    } else {
-      me.dependencies = "";
-    }
+      if (stdout) {
+        var output = stdout.toString();
+        var lines = output.split("\n");
+        console.log(lines);
+        var packageNames = _.map(lines, (line) => line.split(" ")[0]);
+        me.dependencies = utils.toPackageString(utils.toValidPackages(packageNames));
+      } else {
+        me.dependencies = "";
+      }
+    });
   }
 
   this.handleCabalFileChanged = function (uri) {
