@@ -35,6 +35,36 @@ function activate(context) {
   context.subscriptions.push(disposable);
   context.subscriptions.push(manager);
   context.subscriptions.push(cabalFileWatcher);
+
+  /**
+   * Export `search` method as extension public API
+   * Other extensions can use this method as following:
+   * ```javascript
+   * let hoogle = vscode.extensions.getExtension('jcanero.hoogle-vscode');
+   * let hoogleApi = hoogle.exports;
+   * let hoogleSearch = hoogleApi.search;
+   * ```
+   */
+  let api = {
+    /**
+     * Results callback
+     * 
+     * @callback resultsCallback
+     * @param {HoogleResultItemV4 | HoogleResultItemV5} hoogleResults
+     */
+    /**
+     * Runs Hoogle search calling `resultsCallback` with results
+     * 
+     * @param {string} query Hoogle request 
+     * @param {resultsCallback} resultsCallback Results handler
+     */
+    search(query, resultsCallback) {
+      let config = new hoogle.HoogleRequestConfig(query, resultsCallback);
+      let deps = cabalFileWatcher.getDependencies();
+      manager.search(config, deps);
+    }
+  };
+  return api;
 }
 exports.activate = activate;
 
