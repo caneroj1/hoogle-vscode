@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.0.6]
+* Merge pull request [#4](https://github.com/caneroj1/hoogle-vscode/pull/4). Expose hoogle search functionality via a public API. Thanks to [EduardSergeev](https://github.com/EduardSergeev)!
+
 ## [0.0.5]
 * Address [#1](https://github.com/caneroj1/hoogle-vscode/issues/3). Slow startup time was caused by asking stack to enumerate our the dependencies in a workspace. Convert that to an asynchronous call.
 * Merge pull request [#5](https://github.com/caneroj1/hoogle-vscode/pull/5). Prevent duplicate search results. Thanks to [EduardSergeev](https://github.com/EduardSergeev)!
