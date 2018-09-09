@@ -12,8 +12,8 @@ Available for download in the [marketplace](https://marketplace.visualstudio.com
 
 ## Features
 
-1. Press `shift` + `alt`+ `v`, or open the `Command Palette` and select `Hoogle Search`, then type your query to get results.
-2. Select some text, press `shift` + `alt`+ `v`, or open the `Command Palette` and select `Hoogle Search`, and get results based off of the selected text.
+1. Press `shift` + `alt`+ `h`, or open the `Command Palette` and select `Hoogle Search`, then type your query to get results.
+2. Select some text, press `shift` + `alt`+ `h`, or open the `Command Palette` and select `Hoogle Search`, and get results based off of the selected text.
 3. Selecting a result in the dropdown will bring you to Hackage to see the found result in more detail.
 4. Can be configured to use a local Hoogle server.
 5. Can be configured to read from (and watch) a .cabal file in your workspace to use those packages in all queries.
