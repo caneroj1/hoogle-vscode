@@ -2,7 +2,7 @@
   "name": "hoogle-vscode",
   "displayName": "hoogle-vscode",
   "description": "Haskell Hoogle search in Visual Studio Code",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "jcanero",
   "engines": {
     "vscode": "^1.11.0"
